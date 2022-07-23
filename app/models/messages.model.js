@@ -2,7 +2,7 @@ module.exports = mongoose => {
     var schema = mongoose.Schema(
       {
         id: String,
-        Message: String,
+        message: String,
         duedate: { type: Date, default: Date.now },
         status: { type: Number, default: 0 }
       },

@@ -11,7 +11,7 @@ exports.create = (req, res) => {
         return;
       }
       const name = req.body.fullname;
-      const birthday = req.body.birthdate;
+      const birthday = new Date(req.body.birthdate);
       birthday.setHours(9);
       const data = new User({
         fullname: name,
@@ -136,16 +136,16 @@ exports.alertBirthday = async (req, res) => {
   const today = new Date();
   const datemonth = today.getDate()+'-'+today.getMonth(); 
   
-  User.find({})
+  Message.find({status:0})
       .then(data => {
         data.forEach(function(value,index) {
-
-          const birthdate = value.birthdate.getDate()+"-"+value.birthdate.getMonth();
-          if (today.getHours() > 9 && today.getMinutes() > 0) {
-            if (datemonth == birthdate) {
-              // console.log("happy yuyu");
+          const execDate = value.duedate.getDate()+"-"+value.duedate.getMonth();
+          if (today.getHours() > 0 && today.getMinutes() > 0) {
+            console.log("happy yuyus");
+            if (today.getDate() == value.duedate.getDate() && today.getMonth() == value.duedate.getMonth()) {
+              console.log("happy yuyu");
               const data = JSON.stringify({
-                message: "Hey "+value.fullname+", it's your birthday"
+                message: value.message
               });
     
               const options = {
@@ -165,9 +165,15 @@ exports.alertBirthday = async (req, res) => {
             
               request.write(data);
               request.end();
+
+              Message.updateMany({id:{$eq:value.id}}, {status:1}, { useFindAndModify: false }).catch(err => {
+                res.status(500).send({
+                  message:
+                    err.message
+                });
+              });
             }
-          }
-                    
+          }                    
         });
         
         res.send(data);
