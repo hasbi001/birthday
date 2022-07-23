@@ -20,7 +20,7 @@ exports.create = (req, res) => {
         address: req.body.address 
       });
       const dataMessage = new Message({
-        message :"Hey ".+name+", It's your birthday",
+        message :"Hey "+name+", It's your birthday",
         duedate : birthday
       });
       User.create(data)
