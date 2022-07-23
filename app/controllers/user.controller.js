@@ -1,23 +1,39 @@
-const db = require("../models");
-const User = db.users;
 const axios = require('axios');
 const https = require("https");
+
+const db = require("../models");
+const User = db.users;
+const Message = db.messages;
 
 exports.create = (req, res) => {
     if (!req.body) {
         res.status(400).send({ message: "Content can not be empty!" });
         return;
       }
-      
+      const name = req.body.fullname;
+      const birthday = req.body.birthdate;
+      birthday.setHours(9);
       const data = new User({
-        fullname: req.body.fullname,
-        birthdate: req.body.birthdate,
+        fullname: name,
+        birthdate: birthday,
         phonenumber: req.body.phonenumber,
         address: req.body.address 
       });
-      
+      const dataMessage = new Message({
+        message :"Hey ".+name+", It's your birthday",
+        duedate : birthday
+      });
       User.create(data)
         .then(data => {
+          // create data message
+
+          Message.create(dataMessage).catch(err => {
+            res.status(500).send({
+              message:
+                err.message
+            });
+          })
+
           res.send(data);
         })
         .catch(err => {
